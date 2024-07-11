@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>P-1</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #e2e1ec;
+        }
+        .container {
+            border: 2px solid #03045e;
+            width: 100%;
+            max-width: 400px;
+            background-color: #caf0f8;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(172, 10, 10, 0.1);
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            font-size: 14px;
+            color: #555;
+        }
+        input {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .submit-btn, .login-btn, .switch-btn {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            color: #fff;
+            background-color: #00b4d8;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .submit-btn:hover, .login-btn:hover, .switch-btn:hover {
+            background-color: #0077b6;
+        }
+        .switch-btn {
+            background-color: #103fcf;
+        }
+        .switch-btn:hover {
+            background-color: #5a6268;
+        }
+        .section {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="register-section" class="section active">
+            <h1>Register</h1>
+            <label for="student-name">Student name:</label>
+            <input type="text" id="student-name" placeholder="Enter your name">
+            <label for="department">Department:</label>
+            <input type="text" id="department" placeholder="Enter your department">
+            <label for="year">Year:</label>
+            <input type="text" id="year" placeholder="Enter your year">
+            <button class="submit-btn" onclick="storeData()">Register</button>
+            <button class="switch-btn" onclick="showLogin()">Go to Login</button>
+        </div>
+
+        <div id="login-section" class="section">
+            <h1>Login</h1>
+            <label for="login-name">Student name:</label>
+            <input type="text" id="login-name" placeholder="Enter your name">
+            <label for="login-department">Department:</label>
+            <input type="text" id="login-department" placeholder="Enter your department">
+            <label for="login-year">Year:</label>
+            <input type="text" id="login-year" placeholder="Enter your year">
+            <button class="login-btn" onclick="login()">Login</button>
+            <button class="switch-btn" onclick="showRegister()">Go to Register</button>
+        </div>
+    </div>
+
+    <script> 
+        function showRegister() {
+            document.getElementById('register-section').classList.add('active');
+            document.getElementById('login-section').classList.remove('active');
+        }
+
+        function showLogin() {
+            document.getElementById('register-section').classList.remove('active');
+            document.getElementById('login-section').classList.add('active');
+        }
+
+        function storeData() {
+            const studentName = document.getElementById('student-name').value;
+            const department = document.getElementById('department').value;
+            const year = document.getElementById('year').value;
+
+            const studentInfo = {
+                studentName,
+                department,
+                year,
+                timestamp: Date.now()
+            };
+
+            localStorage.setItem('studentInfo', JSON.stringify(studentInfo));
+            alert('Student information saved!');
+        }
+
+        function login() {
+            const loginName = document.getElementById('login-name').value;
+            const loginDepartment = document.getElementById('login-department').value;
+            const loginYear = document.getElementById('login-year').value;
+
+            const storedInfo = JSON.parse(localStorage.getItem('studentInfo'));
+
+            if (!storedInfo) {
+                alert('No student information found. Please register first.');
+                return;
+            }
+
+            const currentTime = Date.now();
+            const storedTime = storedInfo.timestamp;
+
+            const EXPIRATION_TIME = 24 * 60 * 60 * 1000; // 24 hours
+
+            if (currentTime - storedTime > EXPIRATION_TIME) {
+                localStorage.removeItem('studentInfo');
+                alert('Session expired. Please register again.');
+                showRegister();
+                return;
+            }
+
+            if (storedInfo.studentName === loginName &&
+                storedInfo.department === loginDepartment &&
+                storedInfo.year === loginYear) {
+                // alert('Login successful!');
+                localStorage.setItem('loggedIn', 'true');
+                window.location.href = "main.html";
+            } else {
+                alert('Login failed. Please check your credentials.');
+            }
+        }
+    </script>
+</body>
+</html>
